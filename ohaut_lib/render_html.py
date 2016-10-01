@@ -18,8 +18,8 @@ def _get_arguments():
                         metavar="key=value")
     parser.add_argument('--template_path', '-t')
     parser.add_argument('output_dir',  help='output directory')
-    parser.add_argument('--project_name', '-p', dest='project_name',
-                        nargs=1)
+    parser.add_argument('--project_name', '-p', dest='project_name')
+
     args = parser.parse_args()
 
     kwargs = {'project_name': args.project_name}
