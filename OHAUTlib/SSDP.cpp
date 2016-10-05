@@ -1,4 +1,6 @@
+#include <WiFiClient.h>
 #include <ESP8266SSDP.h>
+#include <ESP8266WebServer.h>
 
 void SSDP_setup(ESP8266WebServer *server, const char* name, const char *product) {
 

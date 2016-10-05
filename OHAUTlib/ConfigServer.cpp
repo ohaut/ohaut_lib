@@ -7,7 +7,10 @@
 
 ConfigMap configData;
 ESP8266WebServer* _server;
+//FIXME: remove globals, etc.
 extern bool wifi_connected;
+
+bool handleFileRead(ESP8266WebServer *server, String path);
 
 void setDefaultConfig() {
   char esp_id[32];

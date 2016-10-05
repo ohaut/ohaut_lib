@@ -1,3 +1,7 @@
+#include <Arduino.h>
+#include <WifiClient.h>
+#include <ESP8266WiFi.h>
+#include <PubSubClient.h>
 #include "MQTTDevice.h"
 #include "ConfigMap.h"
 

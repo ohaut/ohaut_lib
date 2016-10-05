@@ -1,6 +1,8 @@
 #include <ESP8266WiFi.h>
+#include "ConfigMap.h"
 #include "consts.h"
 extern ConfigMap configData;
+bool wifi_connected = false;
 bool wifiSetup()
 {
   int connect_tries=3;
@@ -29,5 +31,6 @@ bool wifiSetup()
     WiFi.softAP(configData["wifi_ap_ssid"], configData["wifi_ap_pass"]);
     return false;
   }
+  wifi_connected = true;
   return true;
 }

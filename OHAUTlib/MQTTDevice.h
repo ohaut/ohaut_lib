@@ -1,6 +1,9 @@
 #ifndef __MQTT_DEVICE_H
 #define __MQTT_DEVICE_H
 
+#include <WifiClient.h>
+#include <PubSubClient.h>
+
 #define SUBS_CALLBACK(callback) void (*callback)(byte* value, unsigned int length)
 
 class SubscribedElement;

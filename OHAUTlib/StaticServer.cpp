@@ -13,8 +13,8 @@ String formatBytes(size_t bytes){
   }
 }
 
-String getContentType(String filename){
-  if(server.hasArg("download")) return "application/octet-stream";
+String getContentType(ESP8266WebServer* server, String filename){
+  if(server->hasArg("download")) return "application/octet-stream";
   else if(filename.endsWith(".htm")) return "text/html";
   else if(filename.endsWith(".html")) return "text/html";
   else if(filename.endsWith(".css")) return "text/css";
@@ -39,7 +39,7 @@ bool handleFileRead(ESP8266WebServer *server, String path){
 
   if(path.endsWith("/")) path += "index.html";
 
-  String contentType = getContentType(path);
+  String contentType = getContentType(server, path);
   String pathWithGz = path + ".gz";
 
   if(SPIFFS.exists(pathWithGz) || SPIFFS.exists(path)){
