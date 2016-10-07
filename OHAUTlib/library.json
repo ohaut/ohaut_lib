@@ -1,0 +1,22 @@
+{
+    "name": "OHAUTlib",
+    "keywords": "ohaut, mqtt, http, api, home, automation",
+    "description": "Arduino library to build home automation devices with ESP8266",
+    "authors":
+    {
+        "name": "Miguel Angel Ajo",
+        "email": "miguelangel@ajo.es",
+        "url": "http://ohaut.org"
+    },
+    "version": "0.1.0",
+    "repository":
+    {
+        "type": "git",
+        "url": "https://github.com/ohaut/ohaut_lib.git"
+    },
+    "export": {
+        "include": "OHAUTlib"
+    },
+    "frameworks": "arduino",
+    "platforms": "espressif8266"
+}
