@@ -1,6 +1,7 @@
 #include <OHAUTlib.h>
 
 #define DEVICE_TYPE "TESTDEV"
+#define FIRMWARE_VERSION "000001"
 
 OHAUTservice ohaut;
 
@@ -22,7 +23,7 @@ void setup(void){
     ohaut.on_http_server_ready = &setupHTTPApi;
     ohaut.on_wifi_connected = &setupMQTTHandling;
 
-    ohaut.setup(DEVICE_TYPE, "Test Device");
+    ohaut.setup(DEVICE_TYPE, FIRMWARE_VERSION, "Test Device");
 
 }
 

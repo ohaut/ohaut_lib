@@ -1,4 +1,5 @@
 #ifndef __OHAUT_LIB_H
+#define __OHAUT_LIB_H
 #include <WiFiClient.h>
 #include <ESP8266mDNS.h>
 #include <ArduinoOTA.h>
@@ -30,8 +31,12 @@ class OHAUTservice {
 
     bool is_wifi_connected();
     void set_led_pin(int led_pin);
+    const char* get_device_name();
+    const char* get_firmware_version();
 
-    void setup(const char *device_type, const char *device_name);
+    void setup(const char *device_type,
+               const char *firmware_version,
+               const char *device_name);
 
     void handle();
 
@@ -45,5 +50,6 @@ class OHAUTservice {
     bool _wifi_connected;
     const char* _device_type;
     const char* _device_name;
+    const char* _firmware_version;
 };
 #endif

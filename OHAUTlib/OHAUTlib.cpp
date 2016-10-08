@@ -30,9 +30,11 @@ bool OHAUTservice::is_wifi_connected() {
     return _wifi_connected;
 }
 
-void OHAUTservice::setup(const char *device_type, const char *device_name) {
+void OHAUTservice::setup(const char *device_type, const char* firmware_version,
+                         const char *device_name) {
 
   _device_type = device_type;
+  _firmware_version = firmware_version;
   _device_name = device_name;
 
   if (_led_pin>=0) {
@@ -47,7 +49,7 @@ void OHAUTservice::setup(const char *device_type, const char *device_name) {
     on_config_loaded(&configData);
 
   /* setup the /update-app/ server for app.html.gz updating */
-  _upd_server->setup(_server);
+  _upd_server->setup(_server, this);
 
   /* try to connect to the wifi, otherwise we will have an access point */
   _wifi_connected = wifiSetup();
@@ -80,3 +82,11 @@ void OHAUTservice::handle() {
     ArduinoOTA.handle();
     _server->handleClient();
 }
+
+const char* OHAUTservice::get_firmware_version() {
+   return _firmware_version;
+}
+
+const char* OHAUTservice::get_device_name() {
+   return _device_name;
+} 
