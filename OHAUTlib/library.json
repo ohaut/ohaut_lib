@@ -20,8 +20,8 @@
     "dependencies": {
         "name": "PubSubClient",
         "authors": "Nick O'Leary https://github.com/knolleary",
-        "frameworks": "arduino",
-    }
+        "frameworks": "arduino"
+    },
     "frameworks": "arduino",
     "platforms": "espressif8266"
 }
