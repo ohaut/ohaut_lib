@@ -12,6 +12,7 @@
 #include <ESP8266SSDP.h>
 #include "HTTPUpdateServer.h"
 #include "ConfigMap.h"
+#include "MQTTDevice.h"
 
 extern ConfigMap configData;
 
@@ -22,6 +23,7 @@ extern ConfigMap configData;
 
 class OHAUTservice {
   public:
+    CONFIG_CALLBACK(on_config_defaults);
     CONFIG_CALLBACK(on_config_loaded);
     VOID_CALLBACK(on_wifi_connected);
     HTTPSERVER_CALLBACK(on_http_server_ready);
@@ -32,6 +34,7 @@ class OHAUTservice {
     bool is_wifi_connected();
     void set_led_pin(int led_pin);
     const char* get_device_name();
+    const char* get_device_type();
     const char* get_firmware_version();
 
     void setup(const char *device_type,

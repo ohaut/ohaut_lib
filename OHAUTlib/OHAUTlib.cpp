@@ -1,13 +1,19 @@
 #include "OHAUTlib.h"
 
-void configServerSetup(ESP8266WebServer *server);
+void configServerSetup(ESP8266WebServer *server, CONFIG_CALLBACK(cfg_callback));
 bool wifiSetup();
 void SSDP_setup(ESP8266WebServer *server, const char* name, const char *product);
 
 OHAUTservice::OHAUTservice() {
+
+    // initialize all the callbacks
+    on_config_defaults = NULL;
     on_config_loaded = NULL;
     on_wifi_connected = NULL;
     on_http_server_ready = NULL;
+    on_ota_start = NULL;
+    on_ota_error = NULL;
+    on_ota_end = NULL;
 
     _led_pin = -1;
     _wifi_connected = false;
@@ -43,13 +49,16 @@ void OHAUTservice::setup(const char *device_type, const char* firmware_version,
   }
 
   /* read the configuration, and setup the HTTP config server */
-  configServerSetup(_server);
+  configServerSetup(_server, this->on_config_defaults);
 
   if (on_config_loaded) 
     on_config_loaded(&configData);
 
   /* setup the /update-app/ server for app.html.gz updating */
   _upd_server->setup(_server, this);
+
+  if (on_http_server_ready)
+      on_http_server_ready(_server);
 
   /* try to connect to the wifi, otherwise we will have an access point */
   _wifi_connected = wifiSetup();
@@ -75,7 +84,16 @@ void OHAUTservice::setup(const char *device_type, const char* firmware_version,
   });
   ArduinoOTA.begin();
 
+#if 1
+  /* failsafe recovery during devel */
+  for (int i=0;i<30; i++) {
+      ArduinoOTA.handle();
+      delay(100);
+  }
+#endif
+
   SSDP_setup(_server, configData["mqtt_id"], _device_name);
+  _server->begin();
 }
 
 void OHAUTservice::handle() {
@@ -89,4 +107,8 @@ const char* OHAUTservice::get_firmware_version() {
 
 const char* OHAUTservice::get_device_name() {
    return _device_name;
-} 
+}
+
+const char* OHAUTservice::get_device_type() {
+    return _device_type;
+}

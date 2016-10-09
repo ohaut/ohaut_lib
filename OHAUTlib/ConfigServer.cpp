@@ -4,6 +4,7 @@
 #include <Ticker.h>
 #include <functional>
 #include "consts.h"
+#include <OHAUTlib.h>
 
 ConfigMap configData;
 ESP8266WebServer* _server;
@@ -50,9 +51,10 @@ void setDefaultConfig() {
   configData.set("oh_name", esp_id);
 }
 
-void configSetup() {
+void configSetup(CONFIG_CALLBACK(callback)) {
   SPIFFS.begin();
   setDefaultConfig();
+  if (callback) callback(&configData);
   configData.readTSV(CONFIG_FILENAME);
 }
 
@@ -169,17 +171,6 @@ void handleConfigPost() {
   handlePost(handleConfig);
 }
 
-//TODO(ray): move to ray project
-
-float getDimmerStartupVal(int dimmer) {
-    char key[16];
-    const char *val;
-    sprintf(key, "startup_val_l%d", dimmer);
-    val = configData[key];
-
-    if (val && strlen(val)) return atoi(val)/100.0;
-    else                    return 1.0;
-}
 
 void handleConfigGet() {
    _server->send(200, "text/html", configData.toJsonStr());
@@ -201,9 +192,10 @@ void handleReboot() {
 }
 
 
-void configServerSetup(ESP8266WebServer *server) {
+void configServerSetup(ESP8266WebServer *server,
+                       CONFIG_CALLBACK(cfg_callback)) {
   _server = server;
-  configSetup();
+  configSetup(cfg_callback);
 
   server->on("/", HTTP_GET, [server](){
     if(!handleFileRead(server, "/app.html")) {
