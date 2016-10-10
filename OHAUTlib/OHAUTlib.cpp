@@ -93,6 +93,12 @@ void OHAUTservice::setup(const char *device_type, const char* firmware_version,
 #endif
 
   SSDP_setup(_server, configData["mqtt_id"], _device_name);
+  if (_wifi_connected) {
+      if (_led_pin>=0) digitalWrite(_led_pin, HIGH);
+      if (on_wifi_connected)
+          on_wifi_connected();
+  }
+
   _server->begin();
 }
 
