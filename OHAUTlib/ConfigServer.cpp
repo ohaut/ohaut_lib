@@ -17,12 +17,7 @@ void setDefaultConfig() {
   char esp_id[32];
 
   // create an unique ID for the AP SSID and MQTT ID
-  //TODO(ray): more general default ID
-  sprintf(esp_id, "RAY_%08x", ESP.getChipId());
-
-  // general
-  //TODO(ray): this is ray specific
-  configData.set("mode", "lamp");
+  sprintf(esp_id, "OHAUT_%08x", ESP.getChipId());
 
   // WiFi
   configData.set("wifi_sta_ap", DEFAULT_STA_AP);
@@ -36,12 +31,6 @@ void setDefaultConfig() {
   configData.set("mqtt_path", "/home/kitchen/lamp1");
   configData.set("mqtt_out_path", "/home/kitchen/lamp1/status");
   configData.set("mqtt_id", esp_id);
-
-  // Lamps
-  //TODO(ray): ray specific
-  configData.set("startup_val_l0", "0");
-  configData.set("startup_val_l1", "0");
-  configData.set("startup_val_l2", "0");
 
   // OHAUT integration
   configData.set("oh_int", "1");
