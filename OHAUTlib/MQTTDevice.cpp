@@ -166,7 +166,7 @@ bool MQTTDevice::connected() {
 }
 
 int MQTTDevice::_connect() {
-  Serial.printf("MQTT: Attempting connection to %s ...", _server);
+  Serial.printf("MQTTDevice: Attempting connection to %s ...\r\n", _server);
   if (_last_will_path) {
     // TODO(mangelajo): add authentication and SSL support
     return _client->connect(_client_id,
@@ -182,7 +182,7 @@ void MQTTDevice::_reconnect() {
   if (!_client->connected()) {
     // Attempt to connect
     if (_connect()) {
-        Serial.println("MQTT: connected!");
+        Serial.println("MQTTDevice: connected!");
         // wildcard subscription to everything under our path
         _client->subscribe(_getPathFor("#").c_str());
         for (int i=0; i<20; i++) {
@@ -197,7 +197,7 @@ void MQTTDevice::_reconnect() {
       reconnect_retry_time = reconnect_retry_time * 2;
       if (reconnect_retry_time > max_reconnect_retry_time)
         reconnect_retry_time = max_reconnect_retry_time;
-      Serial.println("MQTT: failed :(");
+      Serial.println("MQTTDevice: failed :(");
     }
   }
 }

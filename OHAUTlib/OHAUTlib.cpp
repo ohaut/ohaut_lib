@@ -43,6 +43,9 @@ void OHAUTservice::setup(const char *device_type, const char* firmware_version,
   _firmware_version = firmware_version;
   _device_name = device_name;
 
+  Serial.println("");
+  Serial.println("OHAUTservice: starting setup");
+
   if (_led_pin>=0) {
     pinMode(_led_pin, OUTPUT);
     digitalWrite(_led_pin, LOW);
