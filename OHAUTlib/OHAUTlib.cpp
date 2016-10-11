@@ -51,7 +51,7 @@ void OHAUTservice::setup(const char *device_type, const char* firmware_version,
   /* read the configuration, and setup the HTTP config server */
   configServerSetup(_server, this->on_config_defaults);
 
-  if (on_config_loaded) 
+  if (on_config_loaded)
     on_config_loaded(&configData);
 
   /* setup the /update-app/ server for app.html.gz updating */
