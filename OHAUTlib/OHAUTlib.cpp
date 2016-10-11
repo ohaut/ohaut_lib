@@ -87,14 +87,6 @@ void OHAUTservice::setup(const char *device_type, const char* firmware_version,
   });
   ArduinoOTA.begin();
 
-#if 1
-  /* failsafe recovery during devel */
-  for (int i=0;i<30; i++) {
-      ArduinoOTA.handle();
-      delay(100);
-  }
-#endif
-
   SSDP_setup(_server, configData["mqtt_id"], _device_name);
   if (_wifi_connected) {
       if (_led_pin>=0) digitalWrite(_led_pin, HIGH);
