@@ -5,6 +5,7 @@
 #include <PubSubClient.h>
 
 #define SUBS_CALLBACK(callback) void (*callback)(byte* value, unsigned int length)
+class OHAUTservice;
 
 class SubscribedElement;
 class SubscribedElement {
@@ -26,7 +27,6 @@ class SubscribedElement {
 
 class MQTTDevice {
 private:
-  const char *_path;
   const char *_server;
   const char *_user;
   const char *_pass;
@@ -46,6 +46,7 @@ private:
 
   WiFiClient _mqttClient;
   PubSubClient *_client;
+  OHAUTservice* _ohaut;
   int _connect();
   void _reconnect();
   String _getPathFor(const char* name);
@@ -53,10 +54,10 @@ private:
   void _publish(String path, const char *value);
   const char* _trueFalse(bool true_false);
 public:
-  MQTTDevice();
+  MQTTDevice(OHAUTservice *ohaut_service);
   void setupOhaut(const char *type, const char *room,
                   const char *section, const char *friendly_name, int order);
-  void setup(const char* server, const char *path, const char *client_id,
+  void setup(const char* server, const char *client_id,
              const char* user=NULL, const char* pass=NULL);
   void setup();
   void handle();

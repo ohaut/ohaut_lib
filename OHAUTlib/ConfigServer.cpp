@@ -28,8 +28,6 @@ void setDefaultConfig() {
 
   // MQTT
   configData.set("mqtt_server", "192.168.1.251");
-  configData.set("mqtt_path", "/home/kitchen/lamp1");
-  configData.set("mqtt_out_path", "/home/kitchen/lamp1/status");
   configData.set("mqtt_id", esp_id);
 
   // OHAUT integration

@@ -3,20 +3,21 @@
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 #include "MQTTDevice.h"
+#include "OHAUTlib.h"
 #include "ConfigMap.h"
 
 int reconnect_retry_time = 1000;
 const int max_reconnect_retry_time = 60000*2;
 
-MQTTDevice::MQTTDevice() {
+MQTTDevice::MQTTDevice(OHAUTservice* ohaut_service) {
     _client = new PubSubClient(_mqttClient);
+    _ohaut = ohaut_service;
 }
 
-void MQTTDevice::setup(const char* server, const char *path, const char *client_id,
+void MQTTDevice::setup(const char* server, const char *client_id,
                        const char* user, const char* pass){
 
   _server = server;
-  _path = path;
   _last_will_path = NULL;
   _last_will_val = NULL;
   _type = NULL;
@@ -42,10 +43,9 @@ void MQTTDevice::setupOhaut(const char* type, const char* room,
   _order = order;
   _friendly_name = friendly_name;
 
-  //TODO(ray): make device id generic, this is ray specific
-  //         : construct a _device_id based on room/friendly_name/chip_id
-
-  sprintf(_device_id, "ray_%08x", ESP.getChipId());
+  sprintf(_device_id, "%s_%08x",
+          _ohaut->get_device_name(),
+          ESP.getChipId());
 
   String device_path = _getOhautPathFor("online");
   setLastWill(device_path.c_str(), "0", MQTTQOS2);
@@ -69,9 +69,8 @@ void MQTTDevice::publishOhautDetails() {
   desc.set("ip", WiFi.localIP().toString());
   desc.set("type", _type);
   desc.set("name", _friendly_name);
-  desc.set("mqtt_path", _path);
-  //TODO(ray): this is RAY specific
-  desc.set("sub_bitmask", String(3, HEX));
+  if (_ohaut->on_ohaut_details) 
+      _ohaut->on_ohaut_details(&desc);
   publishOhautNode("details", desc.toJsonStr().c_str());
 }
 
@@ -125,10 +124,9 @@ void MQTTDevice::setup(){
 }
 
 String MQTTDevice::_getPathFor(const char *name) {
-  String path = _path;
-  path += "/";
+  String path = "element/";
   path += name;
-  return path;
+  return _getOhautPathFor(path.c_str());
 }
 
 String MQTTDevice::_getOhautPathFor(const char *node) {
@@ -183,8 +181,8 @@ void MQTTDevice::_reconnect() {
     // Attempt to connect
     if (_connect()) {
         Serial.println("MQTTDevice: connected!");
-        // wildcard subscription to everything under our path
-        _client->subscribe(_getPathFor("#").c_str());
+        // wildcard subscription to everything under our elements path
+        _client->subscribe(_getPathFor("element/#").c_str());
         for (int i=0; i<20; i++) {
           _client->loop();
           delay(5);
@@ -194,6 +192,7 @@ void MQTTDevice::_reconnect() {
     }
     else
     {
+      // If we can't connect implement expontial back-off
       reconnect_retry_time = reconnect_retry_time * 2;
       if (reconnect_retry_time > max_reconnect_retry_time)
         reconnect_retry_time = max_reconnect_retry_time;
