@@ -98,10 +98,11 @@ class OHAUTservice {
     OHAUTservice();
     ~OHAUTservice();
 
+    MQTTDevice* mqtt;
+
   private:
     ESP8266WebServer* _server;
     HTTPUpdateServer* _upd_server;
-    MQTTDevice* mqtt;
     int _led_pin;
     bool _wifi_connected;
     bool _mqtt_enabled;

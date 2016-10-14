@@ -94,10 +94,9 @@ void OHAUTservice::setup(const char *device_type, const char* firmware_version,
   SSDP_setup(_server, configData["mqtt_id"], _device_name);
   if (_wifi_connected) {
       if (_led_pin>=0) digitalWrite(_led_pin, HIGH);
-      if (on_wifi_connected) {
+      if (on_wifi_connected)
           on_wifi_connected();
-          _setup_mqtt();
-      }
+      _setup_mqtt();
   }
 
   _server->begin();
@@ -106,6 +105,8 @@ void OHAUTservice::setup(const char *device_type, const char* firmware_version,
 void OHAUTservice::handle() {
     ArduinoOTA.handle();
     _server->handleClient();
+    if (_mqtt_enabled)
+        mqtt->handle();
 }
 
 const char* OHAUTservice::get_firmware_version() {
@@ -122,6 +123,7 @@ const char* OHAUTservice::get_device_type() {
 
 void OHAUTservice::_setup_mqtt() {
   _mqtt_enabled = false;
+  Serial.println("OHAUTservice::_setup_mqtt()");
   if (strlen(configData["mqtt_server"])>0) {
     mqtt->setup(configData["mqtt_server"],
                 configData["mqtt_id"]);
@@ -132,12 +134,12 @@ void OHAUTservice::_setup_mqtt() {
                      configData["oh_section"],
                      configData["oh_name"],
                      atoi(configData["oh_order"]));
-    }
-    
+ 
     // This event can be subscribed to setup
     // handlers for MQTT subscriptions
     if (on_mqtt_ready)
         on_mqtt_ready(mqtt);
 
     _mqtt_enabled = true;
+   }
 }
