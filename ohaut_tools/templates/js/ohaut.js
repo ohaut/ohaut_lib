@@ -1,5 +1,3 @@
-var ohaut_project = 'ray';
-
 function load_config()
 {
   $.ajax({
