@@ -101,6 +101,10 @@ void MQTTDevice::_publish(String path, const char *value) {
 void MQTTDevice::publish(const char *name, const char *value) {
   String path = _getPathFor(name);
   _publish(path, value);
+  // having a separate state value is useful when you want to
+  // differentiate as a mqtt receiver if the change came from
+  // the device itself, or an external interface which pushed
+  // the change.
   path += "/state";
   _publish(path, value);
 }
@@ -182,7 +186,7 @@ void MQTTDevice::_reconnect() {
     if (_connect()) {
         Serial.println("MQTTDevice: connected!");
         // wildcard subscription to everything under our elements path
-        _client->subscribe(_getPathFor("element/#").c_str());
+        _client->subscribe(_getPathFor("#").c_str());
         for (int i=0; i<20; i++) {
           _client->loop();
           delay(5);
