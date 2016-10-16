@@ -1,10 +1,10 @@
-OHAUT-lib common libraries and html app
-=======================================
+OHAUT-lib common libraries and tools
+====================================
 
 Common libraries
 ~~~~~~~~~~~~~~~~
 
-HTML generator
-~~~~~~~~~~~~~~
+HTML-Generator tools
+~~~~~~~~~~~~~~~~~~~~
 
 

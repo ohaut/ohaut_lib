@@ -6,7 +6,7 @@ import os.path
 
 from jinja2 import (ChoiceLoader, Environment,
                     PackageLoader, FileSystemLoader)
-import ohaut_lib
+import ohaut_tools
 
 OUTPUT_FILE = 'index.html'
 
@@ -14,10 +14,10 @@ OUTPUT_FILE = 'index.html'
 def _get_arguments():
     parser = argparse.ArgumentParser(description="ohaut html render")
     parser.add_argument('input_file',  help='input html file')
+    parser.add_argument('output_dir',  help='output directory')
     parser.add_argument('--set', '-set', nargs='+', dest='sets',
                         metavar="key=value")
     parser.add_argument('--template_path', '-t')
-    parser.add_argument('output_dir',  help='output directory')
     parser.add_argument('--project_name', '-p', dest='project_name')
 
     args = parser.parse_args()
@@ -41,7 +41,7 @@ def _write_output(output_dir, output_html):
 
 
 def _copy_template_files(output_dir):
-    templates_path = os.path.join(ohaut_lib.__path__[0], 'templates')
+    templates_path = os.path.join(ohaut_tools.__path__[0], 'templates')
     os.system('cp -rf {} {}'.format(os.path.join(templates_path, '*'),
                                     output_dir))
 
@@ -55,7 +55,7 @@ def main():
     if args.template_path:
         loaders.append(FileSystemLoader(args.template_path))
     else:
-        loaders.append(PackageLoader('ohaut_lib', 'templates'))
+        loaders.append(PackageLoader('ohaut_tools', 'templates'))
 
     env = Environment(loader=ChoiceLoader(loaders), trim_blocks=True)
 

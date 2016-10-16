@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 from codecs import open
 from os import path, walk
-from ohaut_lib import __version__
+from ohaut_tools import __version__
 
 here = path.abspath(path.dirname(__file__))
 
@@ -9,7 +9,7 @@ here = path.abspath(path.dirname(__file__))
 with open(path.join(here, 'README.rst'), encoding='utf-8') as readme_f:
     long_description = readme_f.read()
 
-data_dir = path.join(here, 'ohaut_lib', 'templates')
+data_dir = path.join(here, 'ohaut_tools', 'templates')
 data_files = [(d, [path.join(d, f) for f in files])
               for d, folders, files in walk(data_dir)]
 
@@ -58,7 +58,7 @@ setup(
     # simple. Or you can use find_packages().
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
 
-    py_modules=['ohaut_lib'],
+    py_modules=['ohaut_tools'],
 
     install_requires=['jinja2'],
     # extras_require={
@@ -69,7 +69,7 @@ setup(
 
     entry_points={
         'console_scripts': [
-            'ohaut-render-html=ohaut_lib.render_html:main',
+            'ohaut-render-html=ohaut_tools.render_html:main',
         ],
     },
 )
