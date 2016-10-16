@@ -63,7 +63,7 @@ public:
   void handle();
   void setHandler(const char *name, SUBS_CALLBACK(fn));
   void setLastWill(const char *subpath, const char *value, int qos);
-  void publish(const char *name, const char *value);
+  void publish(const char *name, const char *value, bool with_state = false);
   void publishPath(const char *path, const char *value);
   void publishOhautNode(const char *node, const char *value);
   void publishOhautDetails();

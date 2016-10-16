@@ -98,15 +98,17 @@ void MQTTDevice::_publish(String path, const char *value) {
   }
 }
 
-void MQTTDevice::publish(const char *name, const char *value) {
+void MQTTDevice::publish(const char *name, const char *value, bool with_state) {
   String path = _getPathFor(name);
   _publish(path, value);
   // having a separate state value is useful when you want to
   // differentiate as a mqtt receiver if the change came from
   // the device itself, or an external interface which pushed
   // the change.
-  path += "/state";
-  _publish(path, value);
+  if (with_state) {
+      path += "/state";
+    _publish(path, value);
+  }
 }
 
 void MQTTDevice::publishOhautNode(const char *node, const char *value) {
