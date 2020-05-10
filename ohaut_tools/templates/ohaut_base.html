@@ -56,8 +56,7 @@
               <li class="active"><a data-toggle="tab" href="#lamp" aria-controls="lamp">Lamp</a></li>
             {% endblock %}
             <li><a data-toggle="tab" href="#wifi">WiFi</a></li>
-            <li><a data-toggle="tab" href="#mqtt" aria-controls="mqtt">MQTT</a></li>
-            <li><a data-toggle="tab" href="#ohaut" aria-controls="ohaut">OHAUT</a></li>
+            <li><a data-toggle="tab" href="#discovery" aria-controls="discovery">Discovery</a></li>
             <li><a data-toggle="tab" href="#updates" aria-controls="updates">Updates</a></li>
           </ul>
         </div>
@@ -177,56 +176,16 @@
                 <input type="submit" value="Save and Reboot">
             </div>
 
-            <div role="tabpanel" class="tab-pane fade" id="mqtt">
-                <h1 class="page-header">MQTT settings</h1>
-
-                <div class="form-group">
-                    <label for="mqtt_server" class="col-sm-3 control-label">MQTT Server</label>
-                    <div class="col-sm-7">
-                        <input class="form-control" name="mqtt_server" value=''>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="mqtt_id" class="col-sm-3 control-label">MQTT Device ID</label>
-                    <div class="col-sm-7">
-                        <input class="form-control" name="mqtt_id" value=''>
-                    </div>
-                </div>
-
-                <input type="submit" value="Save and Reboot">
-            </div>
-
-            <div role="tabpanel" class="tab-pane fade" id="ohaut">
-                <h1 class="page-header">OHAUT core integration</h1>
+            <div role="tabpanel" class="tab-pane fade" id="discovery">
+                <h1 class="page-header">Discovery details</h1>
 
                 <div class="form-group">
                     <label for="oh_name" class="col-sm-3 control-label">Device name</label>
                     <div class="col-sm-7">
-                        <input class="form-control" name="oh_name" value=''>
+                        <input class="form-control" name="host_id" value=''>
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="oh_room" class="col-sm-3 control-label">House Room</label>
-                    <div class="col-sm-7">
-                        <input class="form-control" name="oh_room" value=''>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="oh_section" class="col-sm-3 control-label">Room section</label>
-                    <div class="col-sm-7">
-                        <input class="form-control" name="oh_section" value=''>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="oh_order" class="col-sm-3 control-label">Order</label>
-                    <div class="col-sm-7">
-                        <input class="form-control" name="oh_order" value=''>
-                    </div>
-                </div>
                 <input type="submit" value="Save">
             </div>
 
