@@ -8,7 +8,7 @@
         "email": "miguelangel@ajo.es",
         "url": "http://ohaut.org"
     },
-    "version": "0.1.6",
+    "version": "0.2.0",
     "repository":
     {
         "type": "git",
@@ -17,11 +17,18 @@
     "export": {
         "include": "OHAUTlib"
     },
-    "dependencies": {
-        "name": "PubSubClient",
-        "authors": "Nick O'Leary https://github.com/knolleary",
-        "frameworks": "arduino"
-    },
+    "dependencies": [
+        {
+            "name": "ESPAsyncTCP",
+            "version": ">=1.2.0",
+            "platforms": "espressif8266"
+        },
+        {
+            "name": "AsyncTCP",
+            "version": ">=1.0.1",
+            "platforms": "espressif32"
+        }
+    ],
     "frameworks": "arduino",
     "platforms": "espressif8266"
 }

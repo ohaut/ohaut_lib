@@ -3,16 +3,14 @@
 #include <WiFiClient.h>
 #include <ESP8266mDNS.h>
 #include <ArduinoOTA.h>
-#define MQTT_MAX_PACKET_SIZE 512
-#include <PubSubClient.h>
 #include <Ticker.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266HTTPClient.h>
 #include <ESP8266httpUpdate.h>
-#include <ESP8266SSDP.h>
 #include "HTTPUpdateServer.h"
 #include "ConfigMap.h"
-#include <Hash.h>
+#include <fauxmoESP.h>
+
 
 extern ConfigMap configData;
 
@@ -80,6 +78,7 @@ class OHAUTservice {
     const char* get_device_name();
     const char* get_device_type();
     const char* get_firmware_version();
+    char* get_host_id();
 
     void setup(const char *device_type,
                const char *firmware_version,
@@ -87,12 +86,15 @@ class OHAUTservice {
 
     void handle();
 
+    fauxmoESP*  fauxmo;
+
     OHAUTservice();
     ~OHAUTservice();
 
   private:
     ESP8266WebServer* _server;
     HTTPUpdateServer* _upd_server;
+
     int _led_pin;
     bool _wifi_connected;
     bool _mqtt_enabled;

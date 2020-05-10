@@ -38,8 +38,11 @@ void setDefaultConfig() {
 }
 
 void upgradeConfig() {
+  char esp_id[32];
+  // create an unique ID for the AP SSID and MQTT ID
+  sprintf(esp_id, "OHAUT_%08x", ESP.getChipId());
   char *cfg = configData["mqtt_id"];
-  if (cfg != NULL && configData["host_id"] == NULL) {
+  if (cfg != NULL && (configData["host_id"] == NULL || strcmp(configData["host_id"], esp_id) == 0 )) {
     configData.set("host_id", cfg);
   }
 }

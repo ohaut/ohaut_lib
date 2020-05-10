@@ -2,7 +2,6 @@
 
 void configServerSetup(ESP8266WebServer *server, CONFIG_CALLBACK(cfg_callback));
 bool wifiSetup();
-void SSDP_setup(ESP8266WebServer *server, const char* name, const char *product);
 
 OHAUTservice::OHAUTservice() {
 
@@ -20,13 +19,15 @@ OHAUTservice::OHAUTservice() {
     _wifi_connected = false;
     _device_type = NULL;
     _device_name = NULL;
-    _server = new ESP8266WebServer();
+    _server = new ESP8266WebServer(8080);
     _upd_server = new HTTPUpdateServer();
+    fauxmo = new fauxmoESP();
 }
 
 OHAUTservice::~OHAUTservice() {
     delete _server;
     delete _upd_server;
+    delete fauxmo;
 }
 
 void OHAUTservice::set_led_pin(int led) {
@@ -68,7 +69,7 @@ void OHAUTservice::setup(const char *device_type, const char* firmware_version,
   _wifi_connected = wifiSetup();
 
   /* configure the Over The Air firmware upgrades */
-  ArduinoOTA.setHostname(configData["mqtt_id"]);
+  ArduinoOTA.setHostname(configData["host_id"]);
   if (on_ota_start) ArduinoOTA.onStart(on_ota_start);
   if (on_ota_error) ArduinoOTA.onError(on_ota_error);
   ArduinoOTA.onEnd([this](){
@@ -88,19 +89,25 @@ void OHAUTservice::setup(const char *device_type, const char* firmware_version,
   });
   ArduinoOTA.begin();
 
-  SSDP_setup(_server, configData["mqtt_id"], _device_name);
+  //SSDP_setup(_server, configData["host_id"], _device_name);
   if (_wifi_connected) {
       if (_led_pin>=0) digitalWrite(_led_pin, HIGH);
       if (on_wifi_connected)
           on_wifi_connected();
   }
 
-  _server->begin();
+   _server->begin();
+
+  fauxmo->createServer(true);
+  fauxmo->setPort(80);
+  fauxmo->enable(true);
+
 }
 
 void OHAUTservice::handle() {
     ArduinoOTA.handle();
     _server->handleClient();
+    fauxmo->handle();
 }
 
 const char* OHAUTservice::get_firmware_version() {
@@ -113,4 +120,8 @@ const char* OHAUTservice::get_device_name() {
 
 const char* OHAUTservice::get_device_type() {
     return _device_type;
+}
+
+char* OHAUTservice::get_host_id() {
+    return configData["host_id"];
 }
