@@ -2,7 +2,6 @@
 #define __HTTP_UPDATE_SERVER_H
 #include <FS.h>
 
-class ESP8266WebServer;
 class OHAUTservice;
 
 class HTTPUpdateServer

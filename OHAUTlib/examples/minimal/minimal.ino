@@ -1,6 +1,6 @@
 #include <OHAUTlib.h>
 
-#define DEVICE_TYPE "TESTDEV"
+#define DEVICE_TYPE "ray"
 #define FIRMWARE_VERSION "000001"
 
 OHAUTservice ohaut;

@@ -12,7 +12,7 @@
 #include <ESP8266SSDP.h>
 #include "HTTPUpdateServer.h"
 #include "ConfigMap.h"
-#include "MQTTDevice.h"
+#include <Hash.h>
 
 extern ConfigMap configData;
 
@@ -20,7 +20,6 @@ extern ConfigMap configData;
 #define VOID_CALLBACK(callback)         void (*callback)()
 #define HTTPSERVER_CALLBACK(callback)   void (*callback)(ESP8266WebServer *server)
 #define OTA_ERROR_CALLBACK(callback)    void (*callback)(ota_error_t error)
-#define MQTT_READY_CALLBACK(callback)   void (*callback)(MQTTDevice* mqtt);
 
 class OHAUTservice {
   public:
@@ -70,13 +69,6 @@ class OHAUTservice {
      *      reboot.
      */
 
-    MQTT_READY_CALLBACK(on_mqtt_ready);
-    /*      Receives: MQTTDevice
-     *      This handler is called when the MQTTDevice object is ready
-     *      so the device can subscribe to any elements via the setHandler
-     *      method. Elements are under /ohaut/<device_id>/elements/<element>
-     */
-
     CONFIG_CALLBACK(on_ohaut_details);
     /*      Receives: ConfigMap*
      *      This handler is called so the device can add any key/value to the
@@ -97,8 +89,6 @@ class OHAUTservice {
 
     OHAUTservice();
     ~OHAUTservice();
-
-    MQTTDevice* mqtt;
 
   private:
     ESP8266WebServer* _server;

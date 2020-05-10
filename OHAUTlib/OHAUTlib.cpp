@@ -14,7 +14,6 @@ OHAUTservice::OHAUTservice() {
     on_ota_start = NULL;
     on_ota_error = NULL;
     on_ota_end = NULL;
-    on_mqtt_ready = NULL;
     on_ohaut_details = NULL;
 
     _led_pin = -1;
@@ -23,13 +22,11 @@ OHAUTservice::OHAUTservice() {
     _device_name = NULL;
     _server = new ESP8266WebServer();
     _upd_server = new HTTPUpdateServer();
-    mqtt = new MQTTDevice(this);
 }
 
 OHAUTservice::~OHAUTservice() {
     delete _server;
     delete _upd_server;
-    delete mqtt;
 }
 
 void OHAUTservice::set_led_pin(int led) {
@@ -96,7 +93,6 @@ void OHAUTservice::setup(const char *device_type, const char* firmware_version,
       if (_led_pin>=0) digitalWrite(_led_pin, HIGH);
       if (on_wifi_connected)
           on_wifi_connected();
-      _setup_mqtt();
   }
 
   _server->begin();
@@ -105,8 +101,6 @@ void OHAUTservice::setup(const char *device_type, const char* firmware_version,
 void OHAUTservice::handle() {
     ArduinoOTA.handle();
     _server->handleClient();
-    if (_mqtt_enabled)
-        mqtt->handle();
 }
 
 const char* OHAUTservice::get_firmware_version() {
@@ -119,27 +113,4 @@ const char* OHAUTservice::get_device_name() {
 
 const char* OHAUTservice::get_device_type() {
     return _device_type;
-}
-
-void OHAUTservice::_setup_mqtt() {
-  _mqtt_enabled = false;
-  Serial.println("OHAUTservice::_setup_mqtt()");
-  if (strlen(configData["mqtt_server"])>0) {
-    mqtt->setup(configData["mqtt_server"],
-                configData["mqtt_id"]);
-
-
-    mqtt->setupOhaut(this->get_device_type(),
-                     configData["oh_room"],
-                     configData["oh_section"],
-                     configData["oh_name"],
-                     atoi(configData["oh_order"]));
- 
-    // This event can be subscribed to setup
-    // handlers for MQTT subscriptions
-    if (on_mqtt_ready)
-        on_mqtt_ready(mqtt);
-
-    _mqtt_enabled = true;
-   }
 }

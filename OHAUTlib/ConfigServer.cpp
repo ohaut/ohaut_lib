@@ -26,9 +26,8 @@ void setDefaultConfig() {
   configData.set("wifi_ap_ssid", esp_id);
   configData.set("wifi_ap_pass", "dimmer123456");
 
-  // MQTT
-  configData.set("mqtt_server", "192.168.1.251");
-  configData.set("mqtt_id", esp_id);
+
+  configData.set("host_id", esp_id);
 
   // OHAUT integration
   configData.set("oh_int", "1");
@@ -38,11 +37,19 @@ void setDefaultConfig() {
   configData.set("oh_name", esp_id);
 }
 
+void upgradeConfig() {
+  char *cfg = configData["mqtt_id"];
+  if (cfg != NULL && configData["host_id"] == NULL) {
+    configData.set("host_id", cfg);
+  }
+}
+
 void configSetup(CONFIG_CALLBACK(callback)) {
   SPIFFS.begin();
   setDefaultConfig();
   if (callback) callback(&configData);
   configData.readTSV(CONFIG_FILENAME);
+  upgradeConfig();
 }
 
 void handleConfig() {
