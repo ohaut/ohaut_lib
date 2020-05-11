@@ -1,7 +1,7 @@
-#include <ESP8266WebServer.h>
+#include <OHAUTlib.h>
 #include "ray_global_defs.h"
 
-ESP8266WebServer *web_server;
+WebServer *web_server;
 
 void handleSetLed() {
 
@@ -53,7 +53,7 @@ void handleGetLeds() {
   web_server->send(200, "application/json", result);
 }
 
-void setupHTTPApi(ESP8266WebServer *server) {
+void setupHTTPApi(WebServer *server) {
   web_server = server;
   server->on("/setLed", HTTP_GET,  handleSetLed);
   server->on("/getLeds", HTTP_GET, handleGetLeds);

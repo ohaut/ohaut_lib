@@ -1,7 +1,6 @@
 #include <Arduino.h>
 #include <WiFiClient.h>
 #include <WiFiServer.h>
-#include <ESP8266WebServer.h>
 #include <WiFiUdp.h>
 #include "OHAUTlib.h"
 #include "consts.h"
@@ -20,7 +19,7 @@ HTTPUpdateServer::HTTPUpdateServer()
   _server = NULL;
 }
 
-void HTTPUpdateServer::setup(ESP8266WebServer *server, OHAUTservice *ohaut)
+void HTTPUpdateServer::setup(WebServer *server, OHAUTservice *ohaut)
 {
     _server = server;
     _ohaut = ohaut;
@@ -49,7 +48,9 @@ void HTTPUpdateServer::setup(ESP8266WebServer *server, OHAUTservice *ohaut)
       // them through the Update object
       HTTPUpload& upload = _server->upload();
       if(upload.status == UPLOAD_FILE_START){
+        #ifdef ESP8266
           WiFiUDP::stopAll();
+        #endif
           _appFile = SPIFFS.open("/app.html.gz_", "w");
       } else if(upload.status == UPLOAD_FILE_WRITE){
         _appFile.write(upload.buf, upload.currentSize);
@@ -129,8 +130,10 @@ bool HTTPUpdateServer::_downloadAppHtmlGz(const char* url=NULL) {
       len = http.getSize();
       uint8_t buf[1024];
       WiFiClient* stream = http.getStreamPtr();
+      #ifdef ESP8266
       WiFiUDP::stopAll();
       WiFiClient::stopAllExcept(stream);
+      #endif
 
       delay(100);
 
@@ -197,7 +200,12 @@ void HTTPUpdateServer::_handleUpdateSPIFFS() {
   url = "http://ohaut.org/";
   url += _ohaut->get_device_name() + 
   url += "/firmware/master/spiffs.bin";
+  #ifdef ESP8266
   t_httpUpdate_return ret = ESPhttpUpdate.updateSpiffs(url.c_str());
+  #elif defined(ESP32)
+  WiFiClient client;
+  t_httpUpdate_return ret = httpUpdate.updateSpiffs(client,url.c_str());
+  #endif
   if (ret == HTTP_UPDATE_OK) _update_status = 2;
   else _update_status = -1;
   Serial.printf("Updating SPIFFS done: %d", _update_status);
@@ -215,12 +223,23 @@ void HTTPUpdateServer::_handleUpdateFirmware() {
   _update_status = 1;
   url = "http://ohaut.org/";
   url += _ohaut->get_device_name();
+  
+  
+  #ifdef ESP8266
   url += "/firmware/master/firmware.bin";
   t_httpUpdate_return ret = ESPhttpUpdate.update(url.c_str());
+  #elif defined(ESP32)
+  url += "/firmware/master/firmware_esp32.bin";
+  WiFiClient client;
+  t_httpUpdate_return ret = httpUpdate.update(client,url.c_str());
+  #endif
+  
   if (ret == HTTP_UPDATE_OK) _update_status = 3;
   else _update_status = -1;
   Serial.printf("Updating Firmware done: %d", _update_status);
-  _server->begin();
+  #ifdef ESP32
+  ESP.restart();
+  #endif
 }
 
 void HTTPUpdateServer::_handleUpdateAll() {
@@ -238,19 +257,31 @@ void HTTPUpdateServer::_handleUpdateAll() {
   {
     _update_status = -1;
     _server->begin();
+    #ifdef ESP32
+    ESP.restart();
+    #endif
     return;
   }
 
   Serial.println(" * Firmware from HTTP");
   url = "http://ohaut.org/";
   url += _ohaut->get_device_name();
+  
+  #ifdef ESP8266
   url += "/firmware/master/firmware.bin";
-
   t_httpUpdate_return ret = ESPhttpUpdate.update(url.c_str());
+  #elif defined(ESP32)
+  url += "/firmware/master/firmware_esp32.bin";
+  WiFiClient client;
+  t_httpUpdate_return ret = httpUpdate.update(client,url.c_str());
+  #endif
 
   if (ret == HTTP_UPDATE_OK) _update_status = 3;
   else _update_status = -1;
   Serial.printf("Updating Firmware done: %d", _update_status);
+  #ifdef ESP32
+  ESP.restart();
+  #endif
   _server->begin();
 }
 

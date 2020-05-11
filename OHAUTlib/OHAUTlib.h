@@ -1,12 +1,31 @@
 #ifndef __OHAUT_LIB_H
 #define __OHAUT_LIB_H
 #include <WiFiClient.h>
-#include <ESP8266mDNS.h>
+//#include <ESP8266mDNS.h>
 #include <ArduinoOTA.h>
 #include <Ticker.h>
+#ifdef ESP8266
 #include <ESP8266WebServer.h>
 #include <ESP8266HTTPClient.h>
 #include <ESP8266httpUpdate.h>
+
+#define WebServer ESP8266WebServer
+#endif 
+
+#ifdef ESP32
+#include <WebServer.h>
+#include <HTTPClient.h>
+#include <HTTPUpdate.h>
+#endif
+
+#if defined(ESP8266)
+#include <ESPAsyncTCP.h>
+#include <Hash.h>
+#elif defined(ESP32)
+#include <AsyncTCP.h>
+#endif
+
+
 #include "HTTPUpdateServer.h"
 #include "ConfigMap.h"
 #include <fauxmoESP.h>
@@ -16,7 +35,7 @@ extern ConfigMap configData;
 
 #define CONFIG_CALLBACK(callback)       void (*callback)(ConfigMap *configData)
 #define VOID_CALLBACK(callback)         void (*callback)()
-#define HTTPSERVER_CALLBACK(callback)   void (*callback)(ESP8266WebServer *server)
+#define HTTPSERVER_CALLBACK(callback)   void (*callback)(WebServer *server)
 #define OTA_ERROR_CALLBACK(callback)    void (*callback)(ota_error_t error)
 
 class OHAUTservice {
@@ -92,7 +111,7 @@ class OHAUTservice {
     ~OHAUTservice();
 
   private:
-    ESP8266WebServer* _server;
+    WebServer* _server;
     HTTPUpdateServer* _upd_server;
 
     int _led_pin;

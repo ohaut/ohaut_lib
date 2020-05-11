@@ -1,4 +1,4 @@
-#include <ESP8266WebServer.h>
+#include <OHAUTlib.h>
 #include <FS.h>
 
 String formatBytes(size_t bytes){
@@ -13,7 +13,7 @@ String formatBytes(size_t bytes){
   }
 }
 
-String getContentType(ESP8266WebServer* server, String filename){
+String getContentType(WebServer* server, String filename){
   if(server->hasArg("download")) return "application/octet-stream";
   else if(filename.endsWith(".htm")) return "text/html";
   else if(filename.endsWith(".html")) return "text/html";
@@ -30,7 +30,7 @@ String getContentType(ESP8266WebServer* server, String filename){
   return "text/plain";
 }
 
-bool handleFileRead(ESP8266WebServer *server, String path){
+bool handleFileRead(WebServer *server, String path){
 
   if (path.endsWith("config.tsv")){
     server->send(403, "text/plain", "Unauthorized");
@@ -48,7 +48,7 @@ bool handleFileRead(ESP8266WebServer *server, String path){
       path += ".gz";
 
     File file = SPIFFS.open(path, "r");
-    size_t sent = server->streamFile(file, contentType);
+    server->streamFile(file, contentType);
     file.close();
     return true;
   }

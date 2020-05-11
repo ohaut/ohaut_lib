@@ -2,8 +2,13 @@
 #include <OHAUTlib.h>
 #include "LEDDimmers.h"
 #include "version.h"
+#if defined(ESP8266)
 #include <ESPAsyncTCP.h>
 #include <Hash.h>
+#elif defined(ESP32)
+#include <AsyncTCP.h>
+#endif
+
 
 #define DEVICE_TYPE "3CHANLED"
 

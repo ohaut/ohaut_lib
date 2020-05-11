@@ -1,6 +1,6 @@
 #include "OHAUTlib.h"
 
-void configServerSetup(ESP8266WebServer *server, CONFIG_CALLBACK(cfg_callback));
+void configServerSetup(WebServer *server, CONFIG_CALLBACK(cfg_callback));
 bool wifiSetup();
 
 OHAUTservice::OHAUTservice() {
@@ -19,7 +19,7 @@ OHAUTservice::OHAUTservice() {
     _wifi_connected = false;
     _device_type = NULL;
     _device_name = NULL;
-    _server = new ESP8266WebServer(8080);
+    _server = new WebServer(8080);
     _upd_server = new HTTPUpdateServer();
     fauxmo = new fauxmoESP();
 }
@@ -73,6 +73,7 @@ void OHAUTservice::setup(const char *device_type, const char* firmware_version,
   if (on_ota_start) ArduinoOTA.onStart(on_ota_start);
   if (on_ota_error) ArduinoOTA.onError(on_ota_error);
   ArduinoOTA.onEnd([this](){
+                    #ifdef ESP8266
                      if (_led_pin>=0) {
                          for (int i=0;i<30;i++){
                             analogWrite(_led_pin,(i*100) % 1001);
@@ -80,6 +81,7 @@ void OHAUTservice::setup(const char *device_type, const char* firmware_version,
                          }
                      }
                      if (on_ota_end) on_ota_end();
+                     #endif
                    });
 
   ArduinoOTA.onProgress([this](unsigned int progress, unsigned int total) {

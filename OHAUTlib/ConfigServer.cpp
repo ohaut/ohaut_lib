@@ -1,4 +1,3 @@
-#include <ESP8266WebServer.h>
 #include <FS.h>
 #include "ConfigMap.h"
 #include <Ticker.h>
@@ -7,17 +6,21 @@
 #include <OHAUTlib.h>
 
 ConfigMap configData;
-ESP8266WebServer* _server;
+WebServer* _server;
 //FIXME: remove globals, etc.
 extern bool wifi_connected;
 
-bool handleFileRead(ESP8266WebServer *server, String path);
+bool handleFileRead(WebServer *server, String path);
 
 void setDefaultConfig() {
   char esp_id[32];
 
   // create an unique ID for the AP SSID and MQTT ID
+#ifdef ESP8266
   sprintf(esp_id, "OHAUT_%08x", ESP.getChipId());
+#elif defined(ESP32)
+  sprintf(esp_id, "OHAUT_%08x", (uint32_t)ESP.getEfuseMac());
+#endif
 
   // WiFi
   configData.set("wifi_sta_ap", DEFAULT_STA_AP);
@@ -40,7 +43,11 @@ void setDefaultConfig() {
 void upgradeConfig() {
   char esp_id[32];
   // create an unique ID for the AP SSID and MQTT ID
+#ifdef ESP8266
   sprintf(esp_id, "OHAUT_%08x", ESP.getChipId());
+#elif defined(ESP32)
+  sprintf(esp_id, "OHAUT_%08x", (uint32_t)ESP.getEfuseMac());
+#endif
   char *cfg = configData["mqtt_id"];
   if (cfg != NULL && (configData["host_id"] == NULL || strcmp(configData["host_id"], esp_id) == 0 )) {
     configData.set("host_id", cfg);
@@ -48,6 +55,12 @@ void upgradeConfig() {
 }
 
 void configSetup(CONFIG_CALLBACK(callback)) {
+  #ifdef ESP8266
+  SPIFFS.begin();
+  #elif defined(ESP32)
+  SPIFFS.begin(true /* Auto Format enabled */);
+  #endif
+
   SPIFFS.begin();
   setDefaultConfig();
   if (callback) callback(&configData);
@@ -189,7 +202,7 @@ void handleReboot() {
 }
 
 
-void configServerSetup(ESP8266WebServer *server,
+void configServerSetup(WebServer *server,
                        CONFIG_CALLBACK(cfg_callback)) {
   _server = server;
   configSetup(cfg_callback);

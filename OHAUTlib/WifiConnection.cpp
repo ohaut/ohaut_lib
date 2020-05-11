@@ -1,4 +1,9 @@
+
+#ifdef ESP8266
 #include <ESP8266WiFi.h>
+#elif defined(ESP32)
+#include <Wifi.h>
+#endif
 #include "ConfigMap.h"
 #include "consts.h"
 extern ConfigMap configData;
@@ -12,7 +17,11 @@ bool wifiSetup()
 
   WiFi.softAP(configData["wifi_ap_ssid"], configData["wifi_ap_pass"]);
   WiFi.mode(WIFI_STA);
-  WiFi.hostname(configData["mqtt_id"]);
+  #if defined(ESP8266)
+  WiFi.hostname(configData["host_id"]);
+  #elif defined(ESP32)
+  WiFi.setHostname(configData["host_id"]);
+  #endif
 
   WiFi.begin(configData["wifi_sta_ap"],
              configData["wifi_sta_pass"]);

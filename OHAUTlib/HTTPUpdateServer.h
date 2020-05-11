@@ -8,7 +8,7 @@ class HTTPUpdateServer
 {
   private:
     File _appFile;
-    ESP8266WebServer *_server;
+    WebServer *_server;
     OHAUTservice *_ohaut;
     static const char *_serverIndex;
 
@@ -23,7 +23,7 @@ class HTTPUpdateServer
 
   public:
     HTTPUpdateServer();
-    void setup(ESP8266WebServer *server, OHAUTservice *ohaut);
+    void setup(WebServer *server, OHAUTservice *ohaut);
 };
 
 
