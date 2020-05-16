@@ -145,5 +145,11 @@ class ConfigMap {
     return NULL;
   }
 
+  bool isTrue(const char *key) {
+    ConfigEntry *p = _find(key);
+    if (!p) return false;
+    return strcmp(p->value, "true") == 0;
+  }
+
 };
 #endif

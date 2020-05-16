@@ -10,7 +10,8 @@
 #include <ESP8266httpUpdate.h>
 
 #define WebServer ESP8266WebServer
-#endif 
+#endif
+
 
 #ifdef ESP32
 #include <WebServer.h>

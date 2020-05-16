@@ -139,6 +139,18 @@ void urldecode(char *urlbuf)
 }
 
 
+int endsWith(const char *str, const char *suffix)
+{
+    if (!str || !suffix)
+        return 0;
+    size_t lenstr = strlen(str);
+    size_t lensuffix = strlen(suffix);
+    if (lensuffix >  lenstr)
+        return 0;
+    return strncmp(str + lenstr - lensuffix, suffix, lensuffix) == 0;
+}
+
+
 void handlePost(std::function<void()> render_form_function) {
   /* Grab every known config entry from the POST request arguments,
    * urldecode it, and set it back to the config object.
@@ -148,13 +160,21 @@ void handlePost(std::function<void()> render_form_function) {
         if (_server->hasArg(key)) {
           String val = _server->arg(key);
           const char *_str = val.c_str();
+           Serial.printf("set %s = %s\r\n", key, _str);
           if (_str) {
             char *str = strdup(_str);
             urldecode(str);
             configData.set(key, str);
             free(str);
           }
-        }
+       } else {
+            if (endsWith(key, "_bool")) {
+              Serial.printf("key %s is bool\r\n", key);
+              char *str = strdup("false");
+              configData.set(key, str);
+              free(str);
+            }
+          }
       }
   );
 
