@@ -14,6 +14,7 @@ bool wifi_connected = false;
 bool wifiSetup()
 {
   int connect_tries=3;
+  wifi_connected = false;
 
   WiFi.mode(WIFI_STA);
   Serial.printf("My host id is: %s\r\n", configData["host_id"]);
@@ -38,8 +39,10 @@ bool wifiSetup()
 
   if (connect_tries <= 0) {
     Serial.println("WiFi: setting AP mode");
-    WiFi.mode(WIFI_AP);
+    WiFi.mode(WIFI_MODE_APSTA);
     WiFi.softAP(configData["wifi_ap_ssid"], configData["wifi_ap_pass"]);
+    WiFi.begin(configData["wifi_sta_ap"],
+               configData["wifi_sta_pass"]);
     return false;
   } else {
     Serial.printf("WiFi: connected to %s, IP address: %s\r\n",
@@ -50,4 +53,15 @@ bool wifiSetup()
 
   wifi_connected = true;
   return true;
+}
+
+void wifiLoop()
+{
+  if (wifi_connected) {
+    if (WiFi.status() != WL_CONNECTED) {
+      Serial.println("WiFi: disconnected, reconnecting...");
+      wifi_connected = false;
+      wifiSetup();
+    }
+  }
 }

@@ -2,6 +2,7 @@
 
 void configServerSetup(WebServer *server, CONFIG_CALLBACK(cfg_callback));
 bool wifiSetup();
+void wifiLoop();
 
 OHAUTservice::OHAUTservice() {
 
@@ -110,6 +111,7 @@ void OHAUTservice::handle() {
     ArduinoOTA.handle();
     _server->handleClient();
     fauxmo->handle();
+    wifiLoop();
 }
 
 const char* OHAUTservice::get_firmware_version() {
