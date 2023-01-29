@@ -39,6 +39,8 @@ extern ConfigMap configData;
 #define HTTPSERVER_CALLBACK(callback)   void (*callback)(WebServer *server)
 #define OTA_ERROR_CALLBACK(callback)    void (*callback)(ota_error_t error)
 
+#define NO_LED_PIN -1
+
 class OHAUTservice {
   public:
     // Events that can be consumed by devices
