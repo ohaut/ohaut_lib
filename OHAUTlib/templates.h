@@ -41,19 +41,39 @@ PROGMEM const char FAUXMO_TCP_STATE_RESPONSE[] = "["
 
 // Working with gen1 and gen3, ON/OFF/%, gen3 requires TCP port 80
 PROGMEM const char FAUXMO_DEVICE_JSON_TEMPLATE[] = "{"
-    "\"type\":\"Extended Color Light\","
-    "\"name\":\"%s\","
-    "\"uniqueid\":\"%s-%d\","
-    "\"modelid\":\"LCT007\","
+    "\"type\": \"Extended color light\","
+    "\"name\": \"%s\","
+    "\"uniqueid\": \"%s\","
+    "\"modelid\": \"LCT015\","
+    "\"manufacturername\": \"Philips\","
+    "\"productname\": \"E4\","
     "\"state\":{"
-        "\"on\":%s,\"bri\":%d,\"xy\":[0,0],\"reachable\": true"
+        "\"on\": %s,"
+	"\"bri\": %d,"
+	"\"xy\": [0,0],"
+	"\"hue\": 0,"
+	"\"sat\": 0,"
+	"\"effect\": \"none\","
+	"\"colormode\": \"xy\","
+	"\"ct\": 500,"
+	"\"mode\": \"homeautomation\","
+	"\"reachable\": true"
     "},"
-    "\"capabilities\":{"
-        "\"certified\":false,"
-        "\"streaming\":{\"renderer\":true,\"proxy\":false}"
+    "\"capabilities\": {"
+        "\"certified\": false,"
+        "\"streaming\": {\"renderer\":true,\"proxy\":false}"
     "},"
-    "\"swversion\":\"5.105.0.21169\""
+    "\"swversion\": \"5.105.0.21169\""
 "}";
+
+// Use shorter description template when listing all devices
+PROGMEM const char FAUXMO_DEVICE_JSON_TEMPLATE_SHORT[] = "{"
+    "\"type\": \"Extended color light\","
+    "\"name\": \"%s\","
+    "\"uniqueid\": \"%s\""
+
+"}";
+
 
 PROGMEM const char FAUXMO_DESCRIPTION_TEMPLATE[] =
 "<?xml version=\"1.0\" ?>"
