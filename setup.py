@@ -9,10 +9,12 @@ here = path.abspath(path.dirname(__file__))
 with open(path.join(here, 'README.rst'), encoding='utf-8') as readme_f:
     long_description = readme_f.read()
 
-data_dir = path.join(here, 'ohaut_tools', 'templates')
-data_files = [(d, [path.join(d, f) for f in files])
-              for d, folders, files in walk(data_dir)]
+remove = data_dir = path.join(here)
+len_remove = len(remove)+1
 
+data_dir = path.join(here, 'ohaut_tools', 'templates')
+data_files = [(d[len_remove:], [path.join(d[len_remove:],f) for f in files])
+              for d, folders, files in walk(data_dir)]
 
 setup(
     name='ohaut-lib',
