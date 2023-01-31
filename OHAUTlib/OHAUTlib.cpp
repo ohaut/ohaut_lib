@@ -1,8 +1,6 @@
 #include "OHAUTlib.h"
 
 void configServerSetup(WebServer *server, CONFIG_CALLBACK(cfg_callback));
-bool wifiSetup();
-void wifiLoop();
 
 OHAUTservice::OHAUTservice() {
 
@@ -22,6 +20,7 @@ OHAUTservice::OHAUTservice() {
     _device_name = NULL;
     _server = new WebServer(8080);
     _upd_server = new HTTPUpdateServer();
+    _wifi_connection = new WifiConnection();
     fauxmo = new fauxmoESP();
 }
 
@@ -29,6 +28,7 @@ OHAUTservice::~OHAUTservice() {
     delete _server;
     delete _upd_server;
     delete fauxmo;
+    delete _wifi_connection;
 }
 
 void OHAUTservice::set_led_pin(int led) {
@@ -36,7 +36,7 @@ void OHAUTservice::set_led_pin(int led) {
 }
 
 bool OHAUTservice::is_wifi_connected() {
-    return _wifi_connected;
+    return _wifi_connection->connected();
 }
 
 void OHAUTservice::setup(const char *device_type, const char* firmware_version,
@@ -66,8 +66,7 @@ void OHAUTservice::setup(const char *device_type, const char* firmware_version,
   if (on_http_server_ready)
       on_http_server_ready(_server);
 
-  /* try to connect to the wifi, otherwise we will have an access point */
-  _wifi_connected = wifiSetup();
+  _wifi_connection->setup();
 
   /* configure the Over The Air firmware upgrades */
   ArduinoOTA.setHostname(configData["host_id"]);
@@ -92,14 +91,7 @@ void OHAUTservice::setup(const char *device_type, const char* firmware_version,
   });
   ArduinoOTA.begin();
 
-  //SSDP_setup(_server, configData["host_id"], _device_name);
-  if (_wifi_connected) {
-      if (_led_pin>=0) digitalWrite(_led_pin, HIGH);
-      if (on_wifi_connected)
-          on_wifi_connected();
-  }
-
-   _server->begin();
+  _server->begin();
 
   fauxmo->createServer(true);
   fauxmo->setPort(80);
@@ -108,10 +100,10 @@ void OHAUTservice::setup(const char *device_type, const char* firmware_version,
 }
 
 void OHAUTservice::handle() {
+    _wifi_connection->handle();
     ArduinoOTA.handle();
     _server->handleClient();
     fauxmo->handle();
-    wifiLoop();
 }
 
 const char* OHAUTservice::get_firmware_version() {

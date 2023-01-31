@@ -95,8 +95,7 @@ void handleConfig() {
 
   String download_app = "";
 
-  if (wifi_connected)
-    download_app = "<a href=\"/update/app\">download html interface app</a>";
+  download_app = "<a href=\"/update/app\">download html interface app</a>";
 
   form.replace("$download_app", download_app);
   configData.replaceVars(form);

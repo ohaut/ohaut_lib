@@ -28,6 +28,7 @@
 
 
 #include "HTTPUpdateServer.h"
+#include "WifiConnection.h"
 #include "ConfigMap.h"
 #include <fauxmoESP.h>
 
@@ -116,6 +117,7 @@ class OHAUTservice {
   private:
     WebServer* _server;
     HTTPUpdateServer* _upd_server;
+    WifiConnection* _wifi_connection;
 
     int _led_pin;
     bool _wifi_connected;
