@@ -16,8 +16,8 @@ class HTTPUpdateServer
     String _getSPIFFSversion();
     void _handleGetUpdateStatus();
     bool _downloadAppHtmlGz(const char* url);
+    bool _downloadFirmware();
     void _handleUpdateAppHtmlGz();
-    void _handleUpdateSPIFFS();
     void _handleUpdateFirmware();
     void _handleUpdateAll();
 

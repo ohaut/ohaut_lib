@@ -19,7 +19,10 @@ void setDefaultConfig() {
 #ifdef ESP8266
   sprintf(esp_id, "OHAUT_%08x", ESP.getChipId());
 #elif defined(ESP32)
-  sprintf(esp_id, "OHAUT_%08x", (uint32_t)ESP.getEfuseMac());
+  uint64_t chipid;
+  uint16_t chip = (uint16_t)(chipid >> 32);
+  chipid = ESP.getEfuseMac(); 
+  sprintf(esp_id, "OHAUT_%04x%08x", chip, (uint32_t)chipid);
 #endif
 
   // WiFi
@@ -46,7 +49,10 @@ void upgradeConfig() {
 #ifdef ESP8266
   sprintf(esp_id, "OHAUT_%08x", ESP.getChipId());
 #elif defined(ESP32)
-  sprintf(esp_id, "OHAUT_%08x", (uint32_t)ESP.getEfuseMac());
+  uint64_t chipid;
+  uint16_t chip = (uint16_t)(chipid >> 32);
+  chipid = ESP.getEfuseMac(); 
+  sprintf(esp_id, "OHAUT_%04x%08x", chip, (uint32_t)chipid);
 #endif
   char *cfg = configData["mqtt_id"];
   if (cfg != NULL && (configData["host_id"] == NULL || strcmp(configData["host_id"], esp_id) == 0 )) {

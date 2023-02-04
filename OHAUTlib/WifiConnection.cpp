@@ -24,7 +24,8 @@ void WifiConnection::setup() {
   Serial.printf("Wifi[setup]: My host id is: %s\r\n", configData["host_id"]);
   WiFi.hostname(configData["host_id"]);
   transitionTo(START);
-  handle(); // do the start.... (some other parts like OTA seem to need WiFi initialized at least)
+  handle(); // do the start.... (some other parts like OTA seem to
+            // need WiFi initialized otherwise it crashes)
 }
 
 void WifiConnection::handle() {

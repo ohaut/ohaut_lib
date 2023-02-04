@@ -25,7 +25,6 @@ void HTTPUpdateServer::setup(WebServer *server, OHAUTservice *ohaut)
     _ohaut = ohaut;
 
     _server->on("/update/status", HTTP_GET,   [&](){ _handleGetUpdateStatus(); });
-    _server->on("/update/spiffs", HTTP_GET,   [&](){ _handleUpdateSPIFFS();    });
     _server->on("/update/firmware", HTTP_GET, [&](){ _handleUpdateFirmware();  });
     _server->on("/update/app", HTTP_GET,      [&](){ _handleUpdateAppHtmlGz(); });
     _server->on("/update/all", HTTP_GET,      [&](){ _handleUpdateAll();       });
@@ -66,6 +65,8 @@ void HTTPUpdateServer::setup(WebServer *server, OHAUTservice *ohaut)
     });
 }
 
+
+// TODO (mangelajo): Remove this function as SPIFFS whole upload is not used anymore.
 String HTTPUpdateServer::_getSPIFFSversion() {
     bool waiting_first_comma = true;
     bool reading_version = false;
@@ -114,7 +115,7 @@ bool HTTPUpdateServer::_downloadAppHtmlGz(const char* url=NULL) {
     String url_str;
     int len;
     if (!url) {
-        url_str = "http://ohaut.org/";
+        url_str = "http://ohaut.github.io/";
         url_str += _ohaut->get_device_name();
         url_str += "/firmware/master/app.html.gz";
         url = url_str.c_str();
@@ -146,7 +147,6 @@ bool HTTPUpdateServer::_downloadAppHtmlGz(const char* url=NULL) {
 
       while(http.connected() && len>0) {
         size_t to_read = stream->available();
-        //Serial.printf("HTTP available: %d\r\n", to_read);
         if (to_read) {
           if (to_read>sizeof(buf)) to_read = sizeof(buf);
           int bytes = stream->readBytes(buf, to_read);
@@ -158,7 +158,7 @@ bool HTTPUpdateServer::_downloadAppHtmlGz(const char* url=NULL) {
     }
     else
     {
-      Serial.println("Error");
+      Serial.println("Error downloading app.html.gz");
       return false;
     }
 
@@ -190,27 +190,21 @@ void HTTPUpdateServer::_handleUpdateAppHtmlGz() {
 
 }
 
-void HTTPUpdateServer::_handleUpdateSPIFFS() {
-  String url;
-  Serial.println("Updating SPIFFS from HTTP");
-  _server->send(200, "application/json", "{\"result\": \"0\", \"message:\": "
-                                       "\"SPIFFS updating, please wait\"}");
-  _server->stop();
-  _update_status = 1;
-  url = "http://ohaut.org/";
-  url += _ohaut->get_device_name() + 
-  url += "/firmware/master/spiffs.bin";
+bool HTTPUpdateServer::_downloadFirmware() {
+  String url = "http://ohaut.github.io/";
+  url += _ohaut->get_device_name();
+  url += "/firmware/master/firmware";
+  
   #ifdef ESP8266
-  t_httpUpdate_return ret = ESPhttpUpdate.updateSpiffs(url.c_str());
+    url += ".bin";
+    t_httpUpdate_return ret = ESPhttpUpdate.update(url.c_str());
   #elif defined(ESP32)
-  WiFiClient client;
-  t_httpUpdate_return ret = httpUpdate.updateSpiffs(client,url.c_str());
+    url += "_esp32c3.bin";
+    WiFiClient client;
+    t_httpUpdate_return ret = httpUpdate.update(client,url.c_str());
   #endif
-  if (ret == HTTP_UPDATE_OK) _update_status = 2;
-  else _update_status = -1;
-  Serial.printf("Updating SPIFFS done: %d", _update_status);
-  configData.writeTSV(CONFIG_FILENAME);
-  _server->begin();
+  
+  return ret == HTTP_UPDATE_OK;
 }
 
 void HTTPUpdateServer::_handleUpdateFirmware() {
@@ -221,25 +215,20 @@ void HTTPUpdateServer::_handleUpdateFirmware() {
 
   _server->stop();
   _update_status = 1;
-  url = "http://ohaut.org/";
+  url = "http://ohaut.github.io/";
   url += _ohaut->get_device_name();
   
-  
-  #ifdef ESP8266
-  url += "/firmware/master/firmware.bin";
-  t_httpUpdate_return ret = ESPhttpUpdate.update(url.c_str());
-  #elif defined(ESP32)
-  url += "/firmware/master/firmware_esp32.bin";
-  WiFiClient client;
-  t_httpUpdate_return ret = httpUpdate.update(client,url.c_str());
-  #endif
-  
-  if (ret == HTTP_UPDATE_OK) _update_status = 3;
-  else _update_status = -1;
+  if (_downloadFirmware()) {
+    _update_status = 3;
+  } else {
+    _update_status = -1;
+  }
+
   Serial.printf("Updating Firmware done: %d", _update_status);
   #ifdef ESP32
   ESP.restart();
   #endif
+  _server->begin();
 }
 
 void HTTPUpdateServer::_handleUpdateAll() {
@@ -249,6 +238,7 @@ void HTTPUpdateServer::_handleUpdateAll() {
                                           "\"Updating everything, please wait\"}");
 
   _server->stop();
+
   Serial.println(" * App from HTTP");
 
   _update_status = 1;
@@ -256,28 +246,14 @@ void HTTPUpdateServer::_handleUpdateAll() {
   else
   {
     _update_status = -1;
-    _server->begin();
-    #ifdef ESP32
-    ESP.restart();
-    #endif
-    return;
+    goto _exit;
   }
 
   Serial.println(" * Firmware from HTTP");
-  url = "http://ohaut.org/";
-  url += _ohaut->get_device_name();
+  if (_downloadFirmware()) _update_status = 3;
+  else                     _update_status = -1;
   
-  #ifdef ESP8266
-  url += "/firmware/master/firmware.bin";
-  t_httpUpdate_return ret = ESPhttpUpdate.update(url.c_str());
-  #elif defined(ESP32)
-  url += "/firmware/master/firmware_esp32.bin";
-  WiFiClient client;
-  t_httpUpdate_return ret = httpUpdate.update(client,url.c_str());
-  #endif
-
-  if (ret == HTTP_UPDATE_OK) _update_status = 3;
-  else _update_status = -1;
+ _exit:
   Serial.printf("Updating Firmware done: %d", _update_status);
   #ifdef ESP32
   ESP.restart();

@@ -58,7 +58,7 @@ function check_for_updates(ohaut_project) {
 
 
     }
-    $.ajax({url: "http://ohaut.org/" + ohaut_project + "/firmware/master/firmware.csv?r="+
+    $.ajax({url: "https://ohaut.github.io/" + ohaut_project + "/firmware/master/firmware.csv?r="+
                 Math.random(),
             success: parse_csv_and_check});
   }
