@@ -6,9 +6,9 @@
     {
         "name": "Miguel Angel Ajo",
         "email": "miguelangel@ajo.es",
-        "url": "http://ohaut.org"
+        "url": "https://ohaut.github.io"
     },
-    "version": "0.2.4",
+    "version": "0.2.5",
     "repository":
     {
         "type": "git",
