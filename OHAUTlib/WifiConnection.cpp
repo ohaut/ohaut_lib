@@ -2,7 +2,7 @@
 #ifdef ESP8266
 #include <ESP8266WiFi.h>
 #elif defined(ESP32)
-#include <Wifi.h>
+#include <WiFi.h>
 #endif
 #include "ConfigMap.h"
 #include "consts.h"
