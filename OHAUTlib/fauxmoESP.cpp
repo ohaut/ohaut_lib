@@ -314,20 +314,8 @@ bool fauxmoESP::_onTCPRequest(AsyncClient *client, bool isGet, String url, Strin
 		}
 	}
 
-	if (url.equals("/")) {
-		char redirect_response[128];
-		snprintf_P(
-			redirect_response, sizeof(redirect_response),
-			"HTTP/1.1 301 Moved Permanently\r\n"
-			"Location: http://%s:8080/\r\n"
-			"Content-Length: 0\r\n\r\n",
-			WiFi.localIP().toString().c_str());
-
-		client->write(redirect_response, strlen(redirect_response));
-		return true;
-	}
-
 	return false;
+
 }
 
 bool fauxmoESP::_onTCPData(AsyncClient *client, void *data, size_t len) {
